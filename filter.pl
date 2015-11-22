@@ -53,7 +53,7 @@ my @ids = $imap->search_since($date->day.'-'.$date->month_abbr.'-'.$date->year);
 print "Looking at ".scalar @ids." messages\n";
 my $count = 0;
 foreach my $i ( @ids ) {
-  unless( $count % 100 ) {
+  unless( $count % 1000 ) {
     print "On $count\n" if( $count );
   }
 
@@ -119,13 +119,14 @@ foreach my $filter ( @{$config->{'filters'}} ) {
   $filter->{'matching'} ||= [];
   while( @{$filter->{'matching'}} ) {
     my @sub = @{$filter->{'matching'}};
-#TODO: Make messages per run configuratble
-#    if( scalar @{$filter->{'matching'}} > 1000 ) {
-#      @sub = @{$filter->{'matching'}}[0..999];
-#      $filter->{'matching'} = [ @{$filter->{'matching'}}[1000..$#{$filter->{'matching'}}] ];
-#    } else {
+    my $per_run = 999;
+    if( scalar @{$filter->{'matching'}} > $per_run ) {
+      @sub = @{$filter->{'matching'}}[0..$per_run];
+      $filter->{'matching'} = [ @{$filter->{'matching'}}[($per_run+1)..$#{$filter->{'matching'}}] ];
+    } else {
+      @sub = @{$filter->{'matching'}};
       $filter->{'matching'} = [];
-#    }
+    }
     my $list = Util::list2range( @sub );
     if( $imap->copy( $list, $filter->{'destination'} ) ) {
       if( $imap->delete( $list ) ) {
