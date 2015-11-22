@@ -6,7 +6,7 @@ package Util;
 
 sub load_config {
   my $file = shift || 'config.json';
-  open( my $config_fd, '<', 'config.json' ) or die( "Can't load config: $!" );
+  open( my $config_fd, '<', $file ) or die( "Can't load config: $!" );
   my $config_txt;
   {
     local $/ = undef;

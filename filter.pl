@@ -6,9 +6,6 @@ use Email::Simple          ();
 use Util                   ();
 use DateTime               ();
 
-#Settings
-my $config = Util::load_config();
-
 #CLI Args
 my $days = 1;
 if(   $ARGV[0]
@@ -18,6 +15,15 @@ if(   $ARGV[0]
   print "First argument can be either NULL or a number of days back to filter for. In other words, if you want to include yesterdays E-mail in the filtering, provide the number 1\n";
   exit(1);
 }
+
+my $config_file;
+if(   $ARGV[1]
+   && -e $ARGV[1] ) {
+  $config_file = $ARGV[1];
+}
+
+#Settings
+my $config = Util::load_config( $config_file );
 
 # Create the object
 my $imap = Net::IMAP::Simple::SSL->new( $config->{'server'}->{'imap_server'} ) ||
